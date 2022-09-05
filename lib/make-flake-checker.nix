@@ -30,10 +30,8 @@ pkgs.callPackage
         optionalAttrs
         optionalString;
 
-      checkers = (import ../checkers
-        {
-          inherit callPackage;
-        }) // extraCheckers;
+      checkers = (import ../checkers { inherit callPackage; })
+        // extraCheckers;
 
       packages = concatMap
         (name: checkers.${name}.packages or [ ])
@@ -113,8 +111,7 @@ pkgs.callPackage
                   fi
                 ''
               ]
-              else []
-            )
+              else [])
             compiledCheckers)}
 
         nix-build --no-out-link ${unsafeDiscardOutputDependency check.drvPath} &>/dev/null
