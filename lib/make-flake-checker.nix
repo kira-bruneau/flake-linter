@@ -30,10 +30,10 @@ pkgs.callPackage
         optionalAttrs
         optionalString;
 
-      checkers = import ../checkers
+      checkers = (import ../checkers
         {
           inherit callPackage;
-        } // extraCheckers;
+        }) // extraCheckers;
 
       packages = concatMap
         (name: checkers.${name}.packages or [ ])
