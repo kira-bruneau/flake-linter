@@ -114,7 +114,7 @@ pkgs.callPackage
               else [])
             compiledCheckers)}
 
-        nix-build --no-out-link ${unsafeDiscardOutputDependency check.drvPath} &>/dev/null
+        nix-build --no-out-link ${unsafeDiscardOutputDependency check.drvPath} &>/dev/null || true
       '';
     in
     {
