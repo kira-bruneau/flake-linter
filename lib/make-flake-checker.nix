@@ -6,123 +6,141 @@
 
 pkgs.callPackage
   ({ lib
-   , stdenv
    , callPackage
-   , runCommand
    , writeShellScript
+   , runCommand
    , coreutils
+   , findutils
+   , patch
+   , runtimeShell
+   , linkFarm
    }:
     let
       inherit (builtins)
         attrNames
         attrValues
-        baseNameOf
         concatLists
         concatMap
-        concatStringsSep
         map
-        mapAttrs
-        unsafeDiscardOutputDependency
-        unsafeDiscardStringContext;
+        mapAttrs;
 
       inherit (lib)
+        escapeShellArg
         makeBinPath
-        optionalAttrs
         optionalString;
 
       checkers = (import ../checkers { inherit callPackage; })
         // extraCheckers;
 
-      packages = concatMap
-        (name: checkers.${name}.packages or [ ])
+      nativeBuildInputs = concatMap
+        (checker: checkers.${checker}.nativeBuildInputs or [ ])
         (attrNames settings);
 
       compiledCheckers = concatLists
         (attrValues
           (mapAttrs
-            (name:
+            (checker:
               { paths ? [ ]
               , extraSettings ? { }
               }:
-              let
-                checker = checkers.${name};
-                packages = checker.packages or [ ];
+              ({ nativeBuildInputs ? [ ]
+               , settingsFormat ? null
+               , check ? null
+               , fix ? null
+               , ...
+               } @ args:
+                assert check != null || fix != null;
+                let
+                  config = optionalString (settingsFormat != null)
+                    (settingsFormat.generate "config" extraSettings);
+                in
+                (map
+                  (path:
+                    let
+                      src = root + "/${path}";
 
-                commonContext = ''
-                  export PATH=${makeBinPath packages}
-                  ${optionalString (checker ? settingsFormat) ''
-                    export config=${checker.settingsFormat.generate "config" extraSettings}
-                  ''}
-                '';
+                      check =
+                        if fix != null
+                        then
+                          runCommand "${checker}-${path}-check"
+                            {
+                              inherit fix;
+                            }
+                            ./check-from-fix.sh
+                        else
+                          runCommand "${checker}-${path}-check"
+                            {
+                              inherit checker nativeBuildInputs config path src;
+                            }
+                            args.check;
 
-                fix = optionalAttrs (checker ? fix) writeShellScript "${name}-fix" ''
-                  ${commonContext}
-                  ${checker.fix}
-                '';
-              in
-              (map
-                (path: {
-                  inherit path fix;
-
-                  check = runCommand "${name}-${baseNameOf path}"
+                      fix =
+                        if args.fix != null
+                        then
+                          runCommand "${checker}-${path}-fix"
+                            {
+                              inherit checker nativeBuildInputs config path src;
+                              fix = writeShellScript "${checker}-fix" args.fix;
+                            }
+                            ./compile-fix.sh
+                        else null;
+                    in
                     {
-                      nativeBuildInputs = packages;
-                    }
-                    ''
-                      (
-                        ${commonContext}
-                        export path=${root + "/${path}"}
-                        path=${root + "/${path}"} ${checker.check}
-                      ) && touch "$out"
-                    '';
-                })
-                paths))
+                      inherit checker path check fix;
+                    })
+                  paths)
+              ) checkers.${checker})
             settings));
 
-      check = derivation {
-        system = stdenv.buildPlatform.system;
-        name = "flake-checker";
-        nativeBuildInputs = map ({ check, ... }: check) compiledCheckers;
-        builder = "${coreutils}/bin/touch";
-        args = [ (placeholder "out") ];
-      };
+      check = runCommand "flake-checker-check"
+        {
+          nativeBuildInputs = map ({ check, ... }: check) compiledCheckers;
+        }
+        ''
+          touch "$out"
+        '';
 
-      fix = writeShellScript "fix" ''
-        while [ ! -f flake.nix ]; do
-          if [ $PWD == / ]; then
-            echo "Couldn't find flake.nix"
-            exit 1
-          fi
+      genericFixScript = writeShellScript "flake-checker-generic-fix" ''
+        export PATH=${makeBinPath [
+          coreutils
+          findutils
+          patch
+        ]}
 
-          cd ..
-        done
+        . ${./find-flake.sh}
 
-        ${concatStringsSep ""
+        find "$1" -type l -exec ${runtimeShell} \
+          -c '\
+            path="''${1#$0/}" \
+            checker="''${path%%/*}" \
+            path="''${path#*/}" \
+            fix="$1" \
+            ${./fix.sh} \
+          ' \
+          "$1" {} \;
+      '';
+
+      fixScript = writeShellScript "flake-checker-fix" ''
+        ${genericFixScript} ${linkFarm "flake-checker-fix-outputs"
           (concatMap
-            ({ path, check, fix }:
+            ({ checker, path, fix, ... }:
               if fix != null
               then [
-                ''
-                  if ! [ -e ${unsafeDiscardStringContext check} ]; then
-                    (
-                      export path=${path}
-                      ${fix}
-                    )
-                  fi
-                ''
+                {
+                  name = "${checker}/${path}";
+                  path = fix;
+                }
               ]
               else [])
             compiledCheckers)}
-
-        nix-build --no-out-link ${unsafeDiscardOutputDependency check.drvPath} &>/dev/null || true
       '';
-    in
-    {
-      inherit packages check;
 
       fix = {
         type = "app";
-        program = toString fix;
+        program = toString fixScript;
       };
+    in
+    {
+      inherit nativeBuildInputs check fix;
     })
 { }

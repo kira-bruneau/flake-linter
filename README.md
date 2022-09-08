@@ -34,7 +34,6 @@ files).
           settings = {
             markdownlint.paths = paths.markdown;
             nixpkgs-fmt.paths = paths.nix;
-            prettier.paths = paths.markdown;
           };
 
           inherit pkgs;
@@ -88,14 +87,15 @@ flake-checker.lib.makeFlakeChecker {
   # Optional
   extraCheckers = {
     my-checker = {
-      packages = [ my-checker ];
+      nativeBuildInputs = [ my-checker ];
 
       # Optional, provides `$config` which will be generated from `extraSettings`
       settingsFormat = pkgs.formats.json { };
 
-      check = ''my-checker --config "$config" "$path"'';
+      # Optional, automatically derived from fix output when not defined
+      check = ''my-checker --config "$config" --check "$src"'';
 
-      # Optional
+      # Required if check isn't defined
       fix = ''my-checker --config "$config" --fix "$path"'';
     };
   };

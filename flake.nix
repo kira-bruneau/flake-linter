@@ -25,7 +25,6 @@
           settings = {
             markdownlint.paths = paths.markdown;
             nixpkgs-fmt.paths = paths.nix;
-            prettier.paths = paths.markdown;
           };
 
           inherit pkgs;

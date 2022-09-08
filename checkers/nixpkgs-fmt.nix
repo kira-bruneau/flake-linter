@@ -1,7 +1,6 @@
 { nixpkgs-fmt }:
 
 {
-  packages = [ nixpkgs-fmt ];
-  check = ''nixpkgs-fmt --check "$path"'';
+  nativeBuildInputs = [ nixpkgs-fmt ];
   fix = ''nixpkgs-fmt "$path"'';
 }
