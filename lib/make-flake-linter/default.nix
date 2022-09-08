@@ -1,6 +1,6 @@
 { root
 , settings
-, extraCheckers ? { }
+, extraLinters ? { }
 , pkgs
 }:
 
@@ -29,17 +29,17 @@ pkgs.callPackage
         makeBinPath
         optionalString;
 
-      checkers = (import ../checkers { inherit callPackage; })
-        // extraCheckers;
+      linters = (import ../../linters { inherit callPackage; })
+        // extraLinters;
 
       nativeBuildInputs = concatMap
-        (checker: checkers.${checker}.nativeBuildInputs or [ ])
+        (linter: linters.${linter}.nativeBuildInputs or [ ])
         (attrNames settings);
 
-      compiledCheckers = concatLists
+      compiledLinters = concatLists
         (attrValues
           (mapAttrs
-            (checker:
+            (linter:
               { paths ? [ ]
               , extraSettings ? { }
               }:
@@ -62,45 +62,45 @@ pkgs.callPackage
                       check =
                         if fix != null
                         then
-                          runCommand "${checker}-${path}-check"
+                          runCommand "${linter}-${path}-check"
                             {
                               inherit fix;
                             }
                             ./check-from-fix.sh
                         else
-                          runCommand "${checker}-${path}-check"
+                          runCommand "${linter}-${path}-check"
                             {
-                              inherit checker nativeBuildInputs config path src;
+                              inherit linter nativeBuildInputs config path src;
                             }
                             args.check;
 
                       fix =
                         if args.fix != null
                         then
-                          runCommand "${checker}-${path}-fix"
+                          runCommand "${linter}-${path}-fix"
                             {
-                              inherit checker nativeBuildInputs config path src;
-                              fix = writeShellScript "${checker}-fix" args.fix;
+                              inherit linter nativeBuildInputs config path src;
+                              fix = writeShellScript "${linter}-fix" args.fix;
                             }
                             ./compile-fix.sh
                         else null;
                     in
                     {
-                      inherit checker path check fix;
+                      inherit linter path check fix;
                     })
                   paths)
-              ) checkers.${checker})
+              ) linters.${linter})
             settings));
 
-      check = runCommand "flake-checker-check"
+      check = runCommand "flake-linter-check"
         {
-          nativeBuildInputs = map ({ check, ... }: check) compiledCheckers;
+          nativeBuildInputs = map ({ check, ... }: check) compiledLinters;
         }
         ''
           touch "$out"
         '';
 
-      genericFixScript = writeShellScript "flake-checker-generic-fix" ''
+      genericFixScript = writeShellScript "flake-linter-generic-fix" ''
         export PATH=${makeBinPath [
           coreutils
           findutils
@@ -112,7 +112,7 @@ pkgs.callPackage
         find "$1" -type l -exec ${runtimeShell} \
           -c '\
             path="''${1#$0/}" \
-            checker="''${path%%/*}" \
+            linter="''${path%%/*}" \
             path="''${path#*/}" \
             fix="$1" \
             ${./fix.sh} \
@@ -120,19 +120,19 @@ pkgs.callPackage
           "$1" {} \;
       '';
 
-      fixScript = writeShellScript "flake-checker-fix" ''
-        ${genericFixScript} ${linkFarm "flake-checker-fix-outputs"
+      fixScript = writeShellScript "flake-linter-fix" ''
+        ${genericFixScript} ${linkFarm "flake-linter-fix-outputs"
           (concatMap
-            ({ checker, path, fix, ... }:
+            ({ linter, path, fix, ... }:
               if fix != null
               then [
                 {
-                  name = "${checker}/${path}";
+                  name = "${linter}/${path}";
                   path = fix;
                 }
               ]
               else [])
-            compiledCheckers)}
+            compiledLinters)}
       '';
 
       fix = {

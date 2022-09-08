@@ -1,4 +1,4 @@
-# flake-checker
+# flake-linter
 
 Incrementally run checks & fixes in your Nix flake (only on changed
 files).
@@ -11,24 +11,24 @@ files).
 
 ```nix
 {
-  description = "Flake checker demo";
+  description = "Flake linter demo";
 
   inputs = {
     flake-utils.url = "github:numtide/flake-utils";
-    flake-checker.url = "gitlab:kira-bruneau/flake-checker";
+    flake-linter.url = "gitlab:kira-bruneau/flake-linter";
     nixpkgs.url = "nixpkgs/release-22.05";
   };
 
-  outputs = { self, flake-utils, flake-checker, nixpkgs }:
+  outputs = { self, flake-utils, flake-linter, nixpkgs }:
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
 
-        paths = flake-checker.lib.partitionToAttrs
-          flake-checker.lib.commonFlakePaths
-          (flake-checker.lib.walkFlake ./.);
+        paths = flake-linter.lib.partitionToAttrs
+          flake-linter.lib.commonFlakePaths
+          (flake-linter.lib.walkFlake ./.);
 
-        checker = flake-checker.lib.makeFlakeChecker {
+        linter = flake-linter.lib.makeFlakeLinter {
           root = ./.;
 
           settings = {
@@ -41,11 +41,11 @@ files).
       in
       {
         checks = {
-          inherit (checker) check;
+          flake-linter = linter.check;
         };
 
         apps = {
-          inherit (checker) fix;
+          inherit (linter) fix;
         };
       });
 }
@@ -68,35 +68,35 @@ flake. It will automatically walk up looking for `flake.nix`.
 
 ## API
 
-### `flake-checker.lib.makeFlakeChecker`
+### `flake-linter.lib.makeFlakeLinter`
 
 ```nix
-flake-checker.lib.makeFlakeChecker {
+flake-linter.lib.makeFlakeLinter {
   root = ./.;
 
   settings = {
-    my-checker = {
-      # Paths to check, relative to `root`
+    my-linter = {
+      # Paths to lint, relative to `root`
       paths = [ ];
 
-      # Checker-specific configuration
+      # Linter-specific configuration
       extraSettings = {};
     };
   };
 
   # Optional
-  extraCheckers = {
-    my-checker = {
-      nativeBuildInputs = [ my-checker ];
+  extraLinters = {
+    my-linter = {
+      nativeBuildInputs = [ my-linter ];
 
       # Optional, provides `$config` which will be generated from `extraSettings`
       settingsFormat = pkgs.formats.json { };
 
       # Optional, automatically derived from fix output when not defined
-      check = ''my-checker --config "$config" --check "$src"'';
+      check = ''my-linter --config "$config" --check "$src"'';
 
       # Required if check isn't defined
-      fix = ''my-checker --config "$config" --fix "$path"'';
+      fix = ''my-linter --config "$config" --fix "$path"'';
     };
   };
 
@@ -104,14 +104,14 @@ flake-checker.lib.makeFlakeChecker {
 }
 ```
 
-#### Builtin Checkers
+#### Builtin Linters
 
 - [markdownlint](https://github.com/igorshubovych/markdownlint-cli)
 - [nixpkgs-fmt](https://github.com/nix-community/nixpkgs-fmt)
 - [prettier](https://github.com/prettier)
 - [rustfmt](https://github.com/rust-lang/rustfmt)
 
-### `flake-checker.lib.commonFlakePaths`
+### `flake-linter.lib.commonFlakePaths`
 
 A template that can be passed to
 [partitionToAttrs](#partitionToAttrs), which will partition a list of
@@ -121,7 +121,7 @@ paths into common categories:
 - `nix`: \*.nix
 - `rust`: \*.rs
 
-### `flake-checker.lib.partitionToAttrs`
+### `flake-linter.lib.partitionToAttrs`
 
 Given a template, produces a function that will partition a list into
 an attrset of lists:
@@ -130,25 +130,25 @@ an attrset of lists:
 let
   inherit (nixpkgs.lib) optional hasSuffix;
 in
-flake-checker.lib.partitionToAttrs {
+flake-linter.lib.partitionToAttrs {
   markdown = path: optional (hasSuffix ".md" path) path;
   nix = path: optional (hasSuffix ".nix" path) path;
   rust = path: optional (hasSuffix ".rs" path) path;
 }
 ```
 
-### `flake-checker.lib.walkFlake`
+### `flake-linter.lib.walkFlake`
 
 Produces a flat list of all the files in a flake:
 
 ```nix
-flake-checker.lib.walkFlake ./.
+flake-linter.lib.walkFlake ./.
 ```
 
 ## Known limitations
 
-- The checker-specific config files generated in Nix aren't exposed
-  when running the check tools manually.
+- The linter-specific config files generated in Nix aren't exposed
+  when running the linters manually.
 
 - rustfmt will try & fail to load "mod"s to other files. This can be
   worked around by applying `#[rustfmt::skip]` to each mod.

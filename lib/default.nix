@@ -11,7 +11,7 @@ let
     stringLength
     substring;
 
-  makeFlakeChecker = import ./make-flake-checker.nix;
+  makeFlakeLinter = import ./make-flake-linter;
 
   commonFlakePaths = import ./common-flake-paths.nix;
 
@@ -27,6 +27,8 @@ let
           (attrNames template)))
       list;
 
+  # This is very similar to listFilesRecursive in nixpkgs, except that
+  # it returns strings relative to root instead of paths.
   walkFlake = root:
     let
       removeRoot = path:
@@ -45,5 +47,5 @@ let
     walkFlakeDir "";
 in
 {
-  inherit makeFlakeChecker commonFlakePaths partitionToAttrs walkFlake;
+  inherit makeFlakeLinter commonFlakePaths partitionToAttrs walkFlake;
 }

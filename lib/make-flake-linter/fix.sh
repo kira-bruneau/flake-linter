@@ -1,5 +1,5 @@
 if [ -s "$fix/patch" ]; then
-  echo "Fixing $path with $checker"
+  echo "Fixing $path with $linter"
 
   reject_file=$(mktemp)
   patch "$path" "$fix/patch" \

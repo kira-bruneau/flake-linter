@@ -19,7 +19,7 @@
           self.lib.commonFlakePaths
           (self.lib.walkFlake ./.);
 
-        checker = self.lib.makeFlakeChecker {
+        linter = self.lib.makeFlakeLinter {
           root = ./.;
 
           settings = {
@@ -32,11 +32,11 @@
       in
       {
         checks = {
-          inherit (checker) check;
+          flake-linter = linter.check;
         };
 
         apps = {
-          inherit (checker) fix;
+          inherit (linter) fix;
         };
       });
 }
