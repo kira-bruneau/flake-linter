@@ -6,7 +6,8 @@
 
 pkgs.callPackage
   ({ lib
-   , callPackage
+   , pkgs
+   , newScope
    , writeShellScript
    , runCommand
    , coreutils
@@ -28,6 +29,12 @@ pkgs.callPackage
         escapeShellArg
         makeBinPath
         optionalString;
+
+      callPackage = newScope {
+        formats = pkgs.formats // (import ./formats.nix {
+          inherit lib;
+        });
+      };
 
       linters = (import ../../linters { inherit callPackage; })
         // extraLinters;
