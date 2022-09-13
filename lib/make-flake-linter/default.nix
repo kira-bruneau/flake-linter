@@ -41,7 +41,7 @@ pkgs.callPackage
           (mapAttrs
             (linter:
               { paths ? [ ]
-              , extraSettings ? { }
+              , settings ? { }
               }:
               ({ nativeBuildInputs ? [ ]
                , settingsFormat ? null
@@ -52,7 +52,7 @@ pkgs.callPackage
                 assert check != null || fix != null;
                 let
                   config = optionalString (settingsFormat != null)
-                    (settingsFormat.generate "config" extraSettings);
+                    (settingsFormat.generate "config" settings);
                 in
                 (map
                   (path:

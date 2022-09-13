@@ -80,7 +80,7 @@ flake-linter.lib.makeFlakeLinter {
       paths = [ ];
 
       # Linter-specific configuration
-      extraSettings = {};
+      settings = {};
     };
   };
 
@@ -89,7 +89,7 @@ flake-linter.lib.makeFlakeLinter {
     my-linter = {
       nativeBuildInputs = [ my-linter ];
 
-      # Optional, provides `$config` which will be generated from `extraSettings`
+      # Optional, provides `$config` which will be generated from `settings`
       settingsFormat = pkgs.formats.json { };
 
       # Optional, automatically derived from fix output when not defined
