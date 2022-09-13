@@ -4,7 +4,7 @@ mkdir -p $(dirname "$path") "$out"
 # captures the changes
 cp -R --no-preserve=mode,ownership "$src" "$path"
 
-out="$path" "$fix" &> "$out/out" || exit_code=$?
-echo "$exit_code" > "$out/exit_code"
+out="$path" "$fix" &>"$out/out" || exit_code=$?
+echo "$exit_code" >"$out/exit_code"
 
-diff -u --label "$path" "$src" --label "$path" "$path" > "$out/patch" || :
+diff -u --label "$path" "$src" --label "$path" "$path" >"$out/patch" || :

@@ -25,6 +25,12 @@
           settings = {
             markdownlint.paths = paths.markdown;
             nixpkgs-fmt.paths = paths.nix;
+            shfmt = {
+              paths = paths.bash;
+              settings = {
+                indent = 2;
+              };
+            };
           };
 
           inherit pkgs;
