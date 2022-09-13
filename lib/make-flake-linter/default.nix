@@ -84,16 +84,22 @@ pkgs.callPackage
                             {
                               inherit fix;
                             }
-                            ./check-from-fix.sh
+                            ''
+                              ${./check-from-fix.sh}
+                              touch "$out"
+                            ''
                         else
                           runCommand "${linter}-${path}-check"
                             {
                               inherit linter nativeBuildInputs config path src;
                             }
-                            args.check;
+                            ''
+                              ${args.check}
+                              touch "$out"
+                            '';
 
                       fix =
-                        if args.fix != null
+                        if args ? fix
                         then
                           runCommand "${linter}-${path}-fix"
                             {

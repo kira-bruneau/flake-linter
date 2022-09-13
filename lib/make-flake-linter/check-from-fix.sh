@@ -7,5 +7,3 @@ elif [ -s "$fix/patch" ]; then
     cat "$fix/patch"
     exit 1
 fi
-
-touch "$out"
