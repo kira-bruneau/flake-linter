@@ -26,6 +26,7 @@ pkgs.callPackage
         mapAttrs;
 
       inherit (lib)
+        assertMsg
         escapeShellArg
         makeBinPath
         optionalString;
@@ -56,7 +57,17 @@ pkgs.callPackage
                , fix ? null
                , ...
                } @ args:
-                assert check != null || fix != null;
+                assert assertMsg (check != null || fix != null) ''
+                  ${linter} is missing a check or fix command
+                '';
+
+                assert assertMsg (settingsFormat == null -> settings == { }) ''
+                  ${linter} was passed settings, but doesn't define a settingsFormat
+                '';
+
+                assert assertMsg (settingsFormat != null -> settingsFormat.type.check settings) ''
+                  ${linter}.settings must be a ${settingsFormat.type.description}
+                '';
                 let
                   config = optionalString (settingsFormat != null)
                     (settingsFormat.generate "config" settings);
