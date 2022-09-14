@@ -26,7 +26,7 @@ files).
 
         paths = flake-linter.lib.partitionToAttrs
           {
-            inherit (flake-linter.lib.commonFlakePaths)
+            inherit (flake-linter.lib.commonPaths)
               markdown
               nix;
           }
@@ -120,7 +120,7 @@ flake-linter.lib.makeFlakeLinter {
 - [rustfmt](https://github.com/rust-lang/rustfmt)
 - [shfmt](https://github.com/mvdan/sh)
 
-### `flake-linter.lib.commonFlakePaths`
+### `flake-linter.lib.commonPaths`
 
 A template that can be passed to
 [partitionToAttrs](#partitionToAttrs), which will partition a list of

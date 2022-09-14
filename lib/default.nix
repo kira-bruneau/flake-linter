@@ -12,7 +12,7 @@ let
 
   makeFlakeLinter = import ./make-flake-linter;
 
-  commonFlakePaths = import ./common-flake-paths.nix;
+  commonPaths = import ./common-paths.nix;
 
   partitionToAttrs = template: list:
     foldl'
@@ -47,5 +47,5 @@ let
     walkFlakeDir "";
 in
 {
-  inherit makeFlakeLinter commonFlakePaths partitionToAttrs walkFlake;
+  inherit makeFlakeLinter commonPaths partitionToAttrs walkFlake;
 }

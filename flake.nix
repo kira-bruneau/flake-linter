@@ -17,7 +17,7 @@
 
         paths = self.lib.partitionToAttrs
           {
-            inherit (self.lib.commonFlakePaths)
+            inherit (self.lib.commonPaths)
               bash
               markdown
               nix;
