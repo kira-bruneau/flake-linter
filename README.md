@@ -114,6 +114,7 @@ flake-linter.lib.makeFlakeLinter {
 - [alejandra](https://github.com/kamadorueda/alejandra)
 - [markdownlint](https://github.com/igorshubovych/markdownlint-cli)
 - [nix-linter](https://github.com/Synthetica9/nix-linter)
+- [nixfmt](https://github.com/serokell/nixfmt)
 - [nixpkgs-fmt](https://github.com/nix-community/nixpkgs-fmt)
 - [prettier](https://github.com/prettier/prettier)
 - [rustfmt](https://github.com/rust-lang/rustfmt)
