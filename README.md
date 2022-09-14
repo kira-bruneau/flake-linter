@@ -110,6 +110,7 @@ flake-linter.lib.makeFlakeLinter {
 
 #### Builtin Linters
 
+- [alejandra](https://github.com/kamadorueda/alejandra)
 - [markdownlint](https://github.com/igorshubovych/markdownlint-cli)
 - [nixpkgs-fmt](https://github.com/nix-community/nixpkgs-fmt)
 - [prettier](https://github.com/prettier/prettier)

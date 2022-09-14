@@ -1,6 +1,7 @@
 { callPackage }:
 
 {
+  alejandra = callPackage ./alejandra.nix { };
   markdownlint = callPackage ./markdownlint.nix { };
   nixpkgs-fmt = callPackage ./nixpkgs-fmt.nix { };
   prettier = callPackage ./prettier.nix { };
