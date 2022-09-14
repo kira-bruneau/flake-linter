@@ -10,7 +10,20 @@ let
     stringLength
     substring;
 
-  makeFlakeLinter = import ./make-flake-linter;
+  makeFlakeLinter = import ./make-flake-linter {
+    inherit linters;
+  };
+
+  linters = pkgs:
+    let
+      callPackage = pkgs.newScope {
+        inherit callPackage;
+        formats = pkgs.formats // formats pkgs;
+      };
+    in
+    callPackage ./linters { };
+
+  formats = pkgs: pkgs.callPackage ./formats.nix { };
 
   commonPaths = import ./common-paths.nix;
 
@@ -47,5 +60,11 @@ let
     walkFlakeDir "";
 in
 {
-  inherit makeFlakeLinter commonPaths partitionToAttrs walkFlake;
+  inherit
+    makeFlakeLinter
+    linters
+    formats
+    commonPaths
+    partitionToAttrs
+    walkFlake;
 }

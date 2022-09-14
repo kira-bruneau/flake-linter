@@ -116,7 +116,13 @@ flake-linter.lib.makeFlakeLinter {
 }
 ```
 
-#### Builtin Linters
+### `flake-linter.lib.linters`
+
+```nix
+flake-linter.lib.linters pkgs
+```
+
+A set of builtin linters, used by `makeFlakeLinter`:
 
 - [alejandra](https://github.com/kamadorueda/alejandra)
 - [markdownlint](https://github.com/igorshubovych/markdownlint-cli)
@@ -127,28 +133,39 @@ flake-linter.lib.makeFlakeLinter {
 - [rustfmt](https://github.com/rust-lang/rustfmt)
 - [shfmt](https://github.com/mvdan/sh)
 
+### `flake-linters.lib.formats`
+
+```nix
+flake-linter.lib.formats pkgs
+```
+
+Custom formats provided by flake-linter, which can be used in
+`settingsFormat`:
+
+- **flags**: Generates a list of command line flags from an attrset
+
 ### `flake-linter.lib.commonPaths`
 
 A template that can be passed to
 [partitionToAttrs](#partitionToAttrs), which will partition a list of
 paths into common categories:
 
-- `bash`: \*.sh, \*.bash
-- `css`: \*.css
-- `html`: \*.html, \*.htm
-- `javascript`: \*.js
-- `json`: \*.json
-- `less`: \*.less
-- `markdown`: \*.md
-- `mdx`: \*.mdx
-- `nix`: \*.nix
-- `prettier`
-- `react`: \*.jsx, \*.tsx
-- `rust`: \*.rs
-- `sass`: \*.scss, \*.sass
-- `typescript`: \*.ts
-- `vue`: \*.vue
-- `yaml`: \*.yaml, \*.yml
+- **bash**: \*.sh, \*.bash
+- **css**: \*.css
+- **html**: \*.html, \*.htm
+- **javascript**: \*.js
+- **json**: \*.json
+- **less**: \*.less
+- **markdown**: \*.md
+- **mdx**: \*.mdx
+- **nix**: \*.nix
+- **prettier**
+- **react**: \*.jsx, \*.tsx
+- **rust**: \*.rs
+- **sass**: \*.scss, \*.sass
+- **typescript**: \*.ts
+- **vue**: \*.vue
+- **yaml**: \*.yaml, \*.yml
 
 ### `flake-linter.lib.partitionToAttrs`
 

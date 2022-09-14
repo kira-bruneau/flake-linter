@@ -1,19 +1,21 @@
+{ linters } @ args:
+
 { root
 , settings
 , extraLinters ? { }
 , pkgs
 }:
 
+let
+  linters = (args.linters pkgs) // extraLinters;
+in
 pkgs.callPackage
   ({ lib
-   , pkgs
-   , newScope
    , writeShellScript
    , runCommand
    , coreutils
    , findutils
    , patch
-   , runtimeShell
    , linkFarm
    }:
     let
@@ -27,15 +29,6 @@ pkgs.callPackage
         escapeShellArg
         makeBinPath
         optionalString;
-
-      callPackage = newScope {
-        formats = pkgs.formats // (import ./formats.nix {
-          inherit lib;
-        });
-      };
-
-      linters = (import ../../linters { inherit callPackage; })
-        // extraLinters;
 
       nativeBuildInputs = concatMap
         (linter: linters.${linter}.nativeBuildInputs or [ ])
