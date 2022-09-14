@@ -159,7 +159,8 @@ paths into common categories:
 - **markdown**: \*.md
 - **mdx**: \*.mdx
 - **nix**: \*.nix
-- **prettier**
+- **prettier**: css, html, javascript, json, less, markdown, mdx,
+  react, sass, typescript, vue, yaml
 - **react**: \*.jsx, \*.tsx
 - **rust**: \*.rs
 - **sass**: \*.scss, \*.sass
