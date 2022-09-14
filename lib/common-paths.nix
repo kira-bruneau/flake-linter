@@ -36,17 +36,17 @@ let
   # TODO: Find a more efficient way of composing these (compile to regexp?)
   prettier = path:
     css path
-    || html path
-    || javascript path
-    || json path
-    || less path
-    || markdown path
-    || mdx path
-    || react path
-    || sass path
-    || typescript path
-    || vue path
-    || yaml path;
+    ++ html path
+    ++ javascript path
+    ++ json path
+    ++ less path
+    ++ markdown path
+    ++ mdx path
+    ++ react path
+    ++ sass path
+    ++ typescript path
+    ++ vue path
+    ++ yaml path;
 in
 {
   inherit
