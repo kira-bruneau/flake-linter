@@ -29,6 +29,11 @@
 
           settings = {
             markdownlint.paths = paths.markdown;
+
+            # Fails to parse arguments starting with _
+            # Possible nix-linter: <stdout>: commitAndReleaseBuffer: invalid argument (invalid character)
+            # nix-linter.paths = paths.nix;
+
             nixpkgs-fmt.paths = paths.nix;
             shfmt = {
               paths = paths.bash;

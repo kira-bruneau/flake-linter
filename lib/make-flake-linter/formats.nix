@@ -24,7 +24,7 @@ in
     in
     attrsOf value;
 
-    generate = name: flags:
+    generate = _name: flags:
       (concatMap
         (flag:
           let value = flags.${flag}; in

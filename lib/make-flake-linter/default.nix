@@ -55,20 +55,26 @@ pkgs.callPackage
             '';
 
             ({ paths ? [ ]
-             , settings ? { }
+             , settings ? null
              }:
 
-              assert assertMsg (settingsFormat == null -> settings == { }) ''
+              assert assertMsg (settings != null -> settingsFormat != null) ''
                 ${linter} was passed settings, but doesn't define a settingsFormat
               '';
 
-              assert assertMsg (settingsFormat != null -> settingsFormat.type.check settings) ''
+              assert assertMsg (settings != null -> settingsFormat.type.check settings) ''
                 ${linter}.settings must be a ${settingsFormat.type.description}
               '';
 
               let
                 config = optionalString (settingsFormat != null)
-                  (settingsFormat.generate "config" settings);
+                  (settingsFormat.generate "config"
+                    (if settings != null
+                    then settings
+                    else
+                      if settingsFormat.type.emptyValue.value != null
+                      then settingsFormat.type.emptyValue.value
+                      else { }));
               in
               (map
                 (path:

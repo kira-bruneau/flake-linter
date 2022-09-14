@@ -37,6 +37,7 @@ files).
 
           settings = {
             markdownlint.paths = paths.markdown;
+            nix-linter.paths = paths.nix;
             nixpkgs-fmt.paths = paths.nix;
           };
 
@@ -112,6 +113,7 @@ flake-linter.lib.makeFlakeLinter {
 
 - [alejandra](https://github.com/kamadorueda/alejandra)
 - [markdownlint](https://github.com/igorshubovych/markdownlint-cli)
+- [nix-linter](https://github.com/Synthetica9/nix-linter)
 - [nixpkgs-fmt](https://github.com/nix-community/nixpkgs-fmt)
 - [prettier](https://github.com/prettier/prettier)
 - [rustfmt](https://github.com/rust-lang/rustfmt)
