@@ -25,7 +25,11 @@ files).
         pkgs = nixpkgs.legacyPackages.${system};
 
         paths = flake-linter.lib.partitionToAttrs
-          flake-linter.lib.commonFlakePaths
+          {
+            inherit (flake-linter.lib.commonFlakePaths)
+              markdown
+              nix;
+          }
           (flake-linter.lib.walkFlake ./.);
 
         linter = flake-linter.lib.makeFlakeLinter {

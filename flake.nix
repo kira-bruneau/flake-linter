@@ -16,7 +16,12 @@
         pkgs = nixpkgs.legacyPackages.${system};
 
         paths = self.lib.partitionToAttrs
-          self.lib.commonFlakePaths
+          {
+            inherit (self.lib.commonFlakePaths)
+              bash
+              markdown
+              nix;
+          }
           (self.lib.walkFlake ./.);
 
         linter = self.lib.makeFlakeLinter {
