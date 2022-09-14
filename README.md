@@ -137,7 +137,7 @@ let
   inherit (nixpkgs.lib) optional hasSuffix;
 in
 flake-linter.lib.partitionToAttrs {
-  bash = path: optional ((hasSuffix ".sh" path) || hasSuffix ".bash" path) path;
+  bash = path: optional (hasSuffix ".sh" path || hasSuffix ".bash" path) path;
   markdown = path: optional (hasSuffix ".md" path) path;
   nix = path: optional (hasSuffix ".nix" path) path;
   rust = path: optional (hasSuffix ".rs" path) path;
