@@ -19,11 +19,8 @@ pkgs.callPackage
     let
       inherit (builtins)
         attrNames
-        attrValues
-        concatLists
         concatMap
-        map
-        mapAttrs;
+        map;
 
       inherit (lib)
         assertMsg
@@ -44,77 +41,79 @@ pkgs.callPackage
         (linter: linters.${linter}.nativeBuildInputs or [ ])
         (attrNames settings);
 
-      compiledLinters = concatLists
-        (attrValues
-          (mapAttrs
-            (linter:
-              { paths ? [ ]
-              , settings ? { }
-              }:
-              ({ nativeBuildInputs ? [ ]
-               , settingsFormat ? null
-               , check ? null
-               , fix ? null
-               , ...
-               } @ args:
-                assert assertMsg (check != null || fix != null) ''
-                  ${linter} is missing a check or fix command
-                '';
+      compiledLinters = concatMap
+        (linter:
+          ({ nativeBuildInputs ? [ ]
+           , settingsFormat ? null
+           , check ? null
+           , fix ? null
+           , ...
+           } @ args:
 
-                assert assertMsg (settingsFormat == null -> settings == { }) ''
-                  ${linter} was passed settings, but doesn't define a settingsFormat
-                '';
+            assert assertMsg (check != null || fix != null) ''
+              ${linter} is missing a check or fix command
+            '';
 
-                assert assertMsg (settingsFormat != null -> settingsFormat.type.check settings) ''
-                  ${linter}.settings must be a ${settingsFormat.type.description}
-                '';
-                let
-                  config = optionalString (settingsFormat != null)
-                    (settingsFormat.generate "config" settings);
-                in
-                (map
-                  (path:
-                    let
-                      src = root + "/${path}";
+            ({ paths ? [ ]
+             , settings ? { }
+             }:
 
-                      check =
-                        if fix != null
-                        then
-                          runCommand "${linter}-${path}-check"
-                            {
-                              inherit fix;
-                            }
-                            ''
-                              ${./check-from-fix.sh}
-                              touch "$out"
-                            ''
-                        else
-                          runCommand "${linter}-${path}-check"
-                            {
-                              inherit linter nativeBuildInputs config path src;
-                            }
-                            ''
-                              ${args.check}
-                              touch "$out"
-                            '';
+              assert assertMsg (settingsFormat == null -> settings == { }) ''
+                ${linter} was passed settings, but doesn't define a settingsFormat
+              '';
 
-                      fix =
-                        if args ? fix
-                        then
-                          runCommand "${linter}-${path}-fix"
-                            {
-                              inherit linter nativeBuildInputs config path src;
-                              fix = writeShellScript "${linter}-fix" args.fix;
-                            }
-                            ./compile-fix.sh
-                        else null;
-                    in
-                    {
-                      inherit linter path check fix;
-                    })
-                  paths)
-              ) linters.${linter})
-            settings));
+              assert assertMsg (settingsFormat != null -> settingsFormat.type.check settings) ''
+                ${linter}.settings must be a ${settingsFormat.type.description}
+              '';
+
+              let
+                config = optionalString (settingsFormat != null)
+                  (settingsFormat.generate "config" settings);
+              in
+              (map
+                (path:
+                  let
+                    src = root + "/${path}";
+
+                    check =
+                      if fix != null
+                      then
+                        runCommand "${linter}-${path}-check"
+                          {
+                            inherit fix;
+                          }
+                          ''
+                            ${./check-from-fix.sh}
+                            touch "$out"
+                          ''
+                      else
+                        runCommand "${linter}-${path}-check"
+                          {
+                            inherit linter nativeBuildInputs config path src;
+                          }
+                          ''
+                            ${args.check}
+                            touch "$out"
+                          '';
+
+                    fix =
+                      if args ? fix
+                      then
+                        runCommand "${linter}-${path}-fix"
+                          {
+                            inherit linter nativeBuildInputs config path src;
+                            fix = writeShellScript "${linter}-fix" args.fix;
+                          }
+                          ./compile-fix.sh
+                      else null;
+                  in
+                  {
+                    inherit linter path check fix;
+                  })
+                paths))
+              settings.${linter})
+            linters.${linter})
+        (attrNames settings);
 
       check = runCommand "flake-linter-check"
         {

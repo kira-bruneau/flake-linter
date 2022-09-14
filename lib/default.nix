@@ -1,8 +1,7 @@
 let
   inherit (builtins)
     attrNames
-    attrValues
-    concatLists
+    concatMap
     foldl'
     listToAttrs
     map
@@ -35,14 +34,15 @@ let
         substring 1 (stringLength path) path;
 
       walkFlakeDir = dir:
-        (concatLists
-          (attrValues
-            (mapAttrs
-              (path: type:
-                if type == "directory"
-                then walkFlakeDir "${dir}/${path}"
-                else [ (removeRoot "${dir}/${path}") ])
-              (readDir (root + dir)))));
+        let
+          entries = readDir (root + dir);
+        in
+        (concatMap
+          (path:
+            if entries.${path} == "directory"
+            then walkFlakeDir "${dir}/${path}"
+            else [ (removeRoot "${dir}/${path}") ])
+          (attrNames entries));
     in
     walkFlakeDir "";
 in
