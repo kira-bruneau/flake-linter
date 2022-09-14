@@ -138,15 +138,16 @@ pkgs.callPackage
 
         . ${./find-flake.sh}
 
-        find "$1" -type l -exec ${runtimeShell} \
-          -c '\
-            path="''${1#$0/}" \
-            linter="''${path%%/*}" \
-            path="''${path#*/}" \
-            fix="$1" \
-            ${./fix.sh} \
-          ' \
-          "$1" {} \;
+        exit_code=0
+        while IFS= read -r -d $'\0' fix; do
+          path="''${fix#$1/}"
+          linter="''${path%%/*}" \
+          path="''${path#*/}" \
+          fix="$fix" \
+          ${./fix.sh} || exit_code=1
+        done < <(find "$1" -type l -print0)
+
+        exit "$exit_code"
       '';
 
       fixScript = writeShellScript "flake-linter-fix" ''
