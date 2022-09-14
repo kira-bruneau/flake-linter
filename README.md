@@ -108,8 +108,9 @@ flake-linter.lib.makeFlakeLinter {
 
 - [markdownlint](https://github.com/igorshubovych/markdownlint-cli)
 - [nixpkgs-fmt](https://github.com/nix-community/nixpkgs-fmt)
-- [prettier](https://github.com/prettier)
+- [prettier](https://github.com/prettier/prettier)
 - [rustfmt](https://github.com/rust-lang/rustfmt)
+- [shfmt](https://github.com/mvdan/sh)
 
 ### `flake-linter.lib.commonFlakePaths`
 
@@ -117,6 +118,7 @@ A template that can be passed to
 [partitionToAttrs](#partitionToAttrs), which will partition a list of
 paths into common categories:
 
+- `bash`: \*.sh, \*.bash
 - `markdown`: \*.md
 - `nix`: \*.nix
 - `rust`: \*.rs
@@ -131,6 +133,7 @@ let
   inherit (nixpkgs.lib) optional hasSuffix;
 in
 flake-linter.lib.partitionToAttrs {
+  bash = path: optional ((hasSuffix ".sh" path) || hasSuffix ".bash" path) path;
   markdown = path: optional (hasSuffix ".md" path) path;
   nix = path: optional (hasSuffix ".nix" path) path;
   rust = path: optional (hasSuffix ".rs" path) path;
