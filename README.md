@@ -87,7 +87,7 @@ flake-linter.lib.makeFlakeLinter {
   # Optional
   extraLinters = {
     my-linter = {
-      nativeBuildInputs = [ my-linter ];
+      nativeBuildInputs = with pkgs; [ my-linter ];
 
       # Optional, provides `$config` which will be generated from `settings`
       settingsFormat = pkgs.formats.json { };
