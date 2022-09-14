@@ -192,6 +192,13 @@ flake-linter.lib.walkFlake ./.
 
 ## Known limitations
 
+- flake-linter computes patches in isolation, and conflicts can occur
+  if multiple linters fix the same lines in the same file, even when
+  they apply identical fixes. If the linters are compatible, running
+  fix again should resolve the failure, but this can be annoying. We
+  plan on reducing this annoyance with [associative & commutative
+  patches](https://pijul.org/posts/2020-12-19-partials).
+
 - The linter-specific config files generated in Nix aren't exposed
   when running the linters manually.
 
