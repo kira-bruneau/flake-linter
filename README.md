@@ -7,7 +7,14 @@ files).
 > interface hasn't been finalized. Please be aware of possible
 > breakage when updating your flake, and refer back to this README.
 
+## Prerequisites
+
+- [Install nix](https://nixos.org/download.html)
+- [Enable nix flakes](https://nixos.wiki/wiki/Flakes#Enable_flakes)
+
 ## Usage
+
+### Add a flake.nix to your project
 
 ```nix
 {
