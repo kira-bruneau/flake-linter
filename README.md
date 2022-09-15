@@ -143,6 +143,8 @@ Custom formats provided by flake-linter, which can be used in
 `settingsFormat`:
 
 - **flags**: Generates a list of command line flags from an attrset
+  (see [shfmt](./lib/linters/shfmt.nix) for an example of how this is
+  used)
 
 ### `flake-linter.lib.commonPaths`
 
