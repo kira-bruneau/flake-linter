@@ -1,7 +1,7 @@
 # flake-linter
 
-Incrementally run checks & fixes in your Nix flake (only on changed
-files).
+A linting framework designed to run checks & fixes incrementally in
+your project (using Nix flakes).
 
 > **NOTE:** Everything outlined in this README should work, but the
 > interface hasn't been finalized. Please be aware of possible
