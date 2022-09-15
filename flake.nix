@@ -55,5 +55,14 @@
         apps = {
           inherit (linter) fix;
         };
+
+        devShells.default = pkgs.mkShell {
+          nativeBuildInputs = linter.nativeBuildInputs ++ [
+            # markdown-lint-check isn't included in flake-linter
+            # because it requires internet access. I'm considering
+            # implementing an "offline mode" for it so we can.
+            pkgs.nodePackages.markdown-link-check
+          ];
+        };
       });
 }

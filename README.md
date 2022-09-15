@@ -140,7 +140,7 @@ flake-linter.lib.formats pkgs
 ```
 
 Custom formats provided by flake-linter, which can be used in
-`settingsFormat`:
+[`settingsFormat`](#flake-linterlibmakeflakelinter):
 
 - **flags**: Generates a list of command line flags from an attrset
   (see [shfmt](./lib/linters/shfmt.nix) for an example of how this is
@@ -149,8 +149,8 @@ Custom formats provided by flake-linter, which can be used in
 ### `flake-linter.lib.commonPaths`
 
 A template that can be passed to
-[partitionToAttrs](#partitionToAttrs), which will partition a list of
-paths into common categories:
+[`partitionToAttrs`](#flake-linterlibpartitiontoattrs), which will
+partition a list of paths into common categories:
 
 - **bash**: \*.sh, \*.bash
 - **css**: \*.css
