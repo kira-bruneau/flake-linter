@@ -14,7 +14,6 @@ pkgs.callPackage
    , writeShellScript
    , runCommand
    , coreutils
-   , findutils
    , patch
    , linkFarm
    }:
@@ -22,7 +21,9 @@ pkgs.callPackage
       inherit (builtins)
         attrNames
         concatMap
-        map;
+        concatStringsSep
+        map
+        toString;
 
       inherit (lib)
         assertMsg
@@ -122,40 +123,28 @@ pkgs.callPackage
           touch "$out"
         '';
 
-      genericFixScript = writeShellScript "flake-linter-generic-fix" ''
+      fixScript = writeShellScript "flake-linter-fix" ''
         export PATH=${makeBinPath [
           coreutils
-          findutils
           patch
         ]}
 
         . ${./find-flake.sh}
 
         exit_code=0
-        while IFS= read -r -d $'\0' fix; do
-          path="''${fix#$1/}"
-          linter="''${path%%/*}" \
-          path="''${path#*/}" \
-          fix="$fix" \
-          ${./fix.sh} || exit_code=1
-        done < <(find "$1" -type l -print0)
-
-        exit "$exit_code"
-      '';
-
-      fixScript = writeShellScript "flake-linter-fix" ''
-        ${genericFixScript} ${linkFarm "flake-linter-fix-outputs"
-          (concatMap
+        ${concatStringsSep ""
+          (map
             ({ linter, path, fix, ... }:
               if fix != null
-              then [
-                {
-                  name = "${linter}/${path}";
-                  path = fix;
-                }
-              ]
-              else [])
+              then ''
+                linter=${escapeShellArg linter} \
+                path=${escapeShellArg path} \
+                fix=${fix} \
+                ${./fix.sh} || exit_code=1
+              ''
+              else "")
             compiledLinters)}
+        exit "$exit_code"
       '';
 
       fix = {
