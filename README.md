@@ -155,7 +155,7 @@ partition a list of paths into common categories:
 - **bash**: \*.sh, \*.bash
 - **css**: \*.css
 - **html**: \*.html, \*.htm
-- **javascript**: \*.js
+- **javascript**: \*.js, \*.mjs
 - **json**: \*.json
 - **less**: \*.less
 - **markdown**: \*.md

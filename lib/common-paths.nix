@@ -20,7 +20,7 @@ let
   bash = path: optional (hasSuffix ".sh" path || hasSuffix ".bash" path) path;
   css = path: optional (hasSuffix ".css" path) path;
   html = path: optional (hasSuffix ".html" path || hasSuffix ".htm" path) path;
-  javascript = path: optional (hasSuffix ".js" path) path;
+  javascript = path: optional (hasSuffix ".js" path || hasSuffix ".mjs" path) path;
   json = path: optional (hasSuffix ".json" path) path;
   less = path: optional (hasSuffix ".less" path) path;
   markdown = path: optional (hasSuffix ".md" path) path;
