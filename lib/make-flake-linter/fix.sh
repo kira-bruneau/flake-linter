@@ -1,7 +1,7 @@
 exit_code=$(($(<"$fix/exit_code")))
 
 if [ -s "$fix/patch" -o "$exit_code" -ne 0 ]; then
-  echo "Fixing $path with $linter"
+  echo -e "\033[1m┇ Fixing $path with $linter ┇\033[0m"
 
   if [ "$exit_code" -ne 0 ]; then
     cat "$fix/out" >&2
@@ -16,7 +16,7 @@ if [ -s "$fix/patch" -o "$exit_code" -ne 0 ]; then
     &>/dev/null
 
   if [ -s "$reject_file" ]; then
-    echo "Failed to apply patch:" >&2
+    echo 'Failed to apply patch:' >&2
     cat "$reject_file" >&2
     if [ "$exit_code" -eq 0 ]; then
       exit_code=1
