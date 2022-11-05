@@ -10,22 +10,22 @@
   };
 
   outputs = { self, flake-utils, nixpkgs }:
-    {
-      lib = import ./lib;
-    } // flake-utils.lib.eachDefaultSystem (system:
+    flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
 
-        paths = self.lib.partitionToAttrs
+        flake-linter-lib = self.lib.${system};
+
+        paths = flake-linter-lib.partitionToAttrs
           {
-            inherit (self.lib.commonPaths)
+            inherit (flake-linter-lib.commonPaths)
               bash
               markdown
               nix;
           }
-          (self.lib.walkFlake ./.);
+          (flake-linter-lib.walkFlake ./.);
 
-        linter = self.lib.makeFlakeLinter {
+        linter = flake-linter-lib.makeFlakeLinter {
           root = ./.;
 
           settings = {
@@ -36,6 +36,7 @@
             # nix-linter.paths = paths.nix;
 
             nixpkgs-fmt.paths = paths.nix;
+
             shfmt = {
               paths = paths.bash;
               settings = {
@@ -43,14 +44,14 @@
               };
             };
           };
-
-          inherit pkgs;
         };
       in
       {
         checks = {
           flake-linter = linter.check;
         };
+
+        lib = import ./lib pkgs;
 
         apps = {
           inherit (linter) fix;

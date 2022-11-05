@@ -1,3 +1,5 @@
+pkgs:
+
 let
   inherit (builtins)
     attrNames
@@ -11,19 +13,19 @@ let
     substring;
 
   makeFlakeLinter = import ./make-flake-linter {
-    inherit linters;
+    inherit pkgs linters;
   };
 
-  linters = pkgs:
+  linters =
     let
       callPackage = pkgs.newScope {
         inherit callPackage;
-        formats = pkgs.formats // formats pkgs;
+        formats = pkgs.formats // formats;
       };
     in
     callPackage ./linters { };
 
-  formats = pkgs: pkgs.callPackage ./formats.nix { };
+  formats = pkgs.callPackage ./formats.nix { };
 
   commonPaths = import ./common-paths.nix;
 

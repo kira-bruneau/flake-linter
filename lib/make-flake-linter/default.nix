@@ -1,13 +1,12 @@
-{ linters } @ args:
+{ pkgs, linters } @ args:
 
 { root
 , settings
 , extraLinters ? { }
-, pkgs
 }:
 
 let
-  linters = (args.linters pkgs) // extraLinters;
+  linters = args.linters // extraLinters;
 in
 pkgs.callPackage
   ({ lib
@@ -15,7 +14,6 @@ pkgs.callPackage
    , runCommand
    , coreutils
    , patch
-   , linkFarm
    }:
     let
       inherit (builtins)

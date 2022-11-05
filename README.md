@@ -23,32 +23,28 @@ your project (using Nix flakes).
   inputs = {
     flake-utils.url = "github:numtide/flake-utils";
     flake-linter.url = "gitlab:kira-bruneau/flake-linter";
-    nixpkgs.url = "nixpkgs/release-22.05";
   };
 
-  outputs = { self, flake-utils, flake-linter, nixpkgs }:
+  outputs = { flake-utils, flake-linter }:
     flake-utils.lib.eachDefaultSystem (system:
       let
-        pkgs = nixpkgs.legacyPackages.${system};
+        flake-linter-lib = flake-linter.lib.${system};
 
-        paths = flake-linter.lib.partitionToAttrs
+        paths = flake-linter-lib.partitionToAttrs
           {
-            inherit (flake-linter.lib.commonPaths)
+            inherit (flake-linter-lib.commonPaths)
               markdown
               nix;
           }
-          (flake-linter.lib.walkFlake ./.);
+          (flake-linter-lib.walkFlake ./.);
 
-        linter = flake-linter.lib.makeFlakeLinter {
+        linter = flake-linter-lib.makeFlakeLinter {
           root = ./.;
-
           settings = {
             markdownlint.paths = paths.markdown;
             nix-linter.paths = paths.nix;
             nixpkgs-fmt.paths = paths.nix;
           };
-
-          inherit pkgs;
         };
       in
       {
@@ -80,10 +76,10 @@ flake. It will automatically walk up looking for `flake.nix`.
 
 ## API
 
-### `flake-linter.lib.makeFlakeLinter`
+### `makeFlakeLinter`
 
 ```nix
-flake-linter.lib.makeFlakeLinter {
+flake-linter-lib.makeFlakeLinter {
   root = ./.;
 
   settings = {
@@ -111,16 +107,10 @@ flake-linter.lib.makeFlakeLinter {
       fix = ''my-linter --config "$config" --fix "$path"'';
     };
   };
-
-  inherit pkgs;
 }
 ```
 
-### `flake-linter.lib.linters`
-
-```nix
-flake-linter.lib.linters pkgs
-```
+### `linters`
 
 A set of builtin linters, used by `makeFlakeLinter`:
 
@@ -133,11 +123,7 @@ A set of builtin linters, used by `makeFlakeLinter`:
 - [rustfmt](https://github.com/rust-lang/rustfmt)
 - [shfmt](https://github.com/mvdan/sh)
 
-### `flake-linters.lib.formats`
-
-```nix
-flake-linter.lib.formats pkgs
-```
+### `formats`
 
 Custom formats provided by flake-linter, which can be used in
 [`settingsFormat`](#flake-linterlibmakeflakelinter):
@@ -146,7 +132,7 @@ Custom formats provided by flake-linter, which can be used in
   (see [shfmt](./lib/linters/shfmt.nix) for an example of how this is
   used)
 
-### `flake-linter.lib.commonPaths`
+### `commonPaths`
 
 A template that can be passed to
 [`partitionToAttrs`](#flake-linterlibpartitiontoattrs), which will
@@ -170,7 +156,7 @@ partition a list of paths into common categories:
 - **vue**: \*.vue
 - **yaml**: \*.yaml, \*.yml
 
-### `flake-linter.lib.partitionToAttrs`
+### `partitionToAttrs`
 
 Given a template, produces a function that will partition a list into
 an attrset of lists:
@@ -179,18 +165,18 @@ an attrset of lists:
 let
   inherit (nixpkgs.lib) optional hasSuffix;
 in
-flake-linter.lib.partitionToAttrs {
+flake-linter-lib.partitionToAttrs {
   markdown = path: optional (hasSuffix ".md" path) path;
   nix = path: optional (hasSuffix ".nix" path) path;
 }
 ```
 
-### `flake-linter.lib.walkFlake`
+### `walkFlake`
 
 Produces a flat list of all the files in a flake:
 
 ```nix
-flake-linter.lib.walkFlake ./.
+flake-linter-lib.walkFlake ./.
 ```
 
 ## Known limitations
