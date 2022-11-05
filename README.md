@@ -42,7 +42,6 @@ your project (using Nix flakes).
           root = ./.;
           settings = {
             markdownlint.paths = paths.markdown;
-            nix-linter.paths = paths.nix;
             nixpkgs-fmt.paths = paths.nix;
           };
         };
