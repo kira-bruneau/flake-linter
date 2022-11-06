@@ -116,10 +116,11 @@ A set of builtin linters, used by `makeFlakeLinter`:
 - [alejandra](https://github.com/kamadorueda/alejandra)
 - [markdownlint](https://github.com/igorshubovych/markdownlint-cli)
 - [nix-linter](https://github.com/Synthetica9/nix-linter)
-- [nixfmt](https://github.com/serokell/nixfmt)
-- [nixpkgs-fmt](https://github.com/nix-community/nixpkgs-fmt)
-- [prettier](https://github.com/prettier/prettier)
+- [nixfmt](https://nixfmt.serokell.io)
+- [nixpkgs-fmt](https://nix-community.github.io/nixpkgs-fmt)
+- [prettier](https://prettier.io)
 - [rustfmt](https://github.com/rust-lang/rustfmt)
+- [shellcheck](https://www.shellcheck.net)
 - [shfmt](https://github.com/mvdan/sh)
 
 ### `formats`
