@@ -71,7 +71,7 @@ pkgs.callPackage
               (map
                 (path:
                   let
-                    src = root + "/${path}";
+                    src = /${root}/${path};
 
                     check =
                       if fix != null
