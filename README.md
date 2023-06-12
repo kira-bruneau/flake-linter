@@ -106,6 +106,9 @@ flake-linter-lib.makeFlakeLinter {
       fix = ''my-linter --config "$config" --fix "$path"'';
     };
   };
+
+  # Optional, override the default nixpkgs package set
+  inherit pkgs;
 }
 ```
 

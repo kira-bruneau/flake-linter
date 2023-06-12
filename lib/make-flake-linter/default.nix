@@ -3,6 +3,7 @@
 { root
 , settings
 , extraLinters ? { }
+, pkgs ? args.pkgs
 }:
 
 let
