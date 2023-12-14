@@ -129,7 +129,7 @@ A set of builtin linters, used by `makeFlakeLinter`:
 ### `formats`
 
 Custom formats provided by flake-linter, which can be used in
-[`settingsFormat`](#flake-linterlibmakeflakelinter):
+[`settingsFormat`](#makeflakelinter):
 
 - **flags**: Generates a list of command line flags from an attrset
   (see [shfmt](./lib/linters/shfmt.nix) for an example of how this is
@@ -138,7 +138,7 @@ Custom formats provided by flake-linter, which can be used in
 ### `commonPaths`
 
 A template that can be passed to
-[`partitionToAttrs`](#flake-linterlibpartitiontoattrs), which will
+[`partitionToAttrs`](#partitiontoattrs), which will
 partition a list of paths into common categories:
 
 - **bash**: \*.sh, \*.bash
@@ -214,4 +214,4 @@ flake-linter-lib.walkFlake ./.
 - It's currently only possible to provide linter settings
   per-linter. We don't support path-specific settings, but we plan on
   adding support, using the `type.merge` function provided in each
-  [`settingsFormat`](#flake-linterlibmakeflakelinter).
+  [`settingsFormat`](#makeflakelinter).
