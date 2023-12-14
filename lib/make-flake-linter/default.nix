@@ -65,7 +65,7 @@ pkgs.callPackage
                     (if settings != null
                     then settings
                     else
-                      if settingsFormat.type.emptyValue ? value
+                      if settingsFormat.type.emptyValue ? value && settingsFormat.type.emptyValue.value != null
                       then settingsFormat.type.emptyValue.value
                       else { }));
               in
