@@ -1,7 +1,7 @@
-{ nixfmt, formats }:
+{ nixfmt-classic, formats }:
 
 {
-  nativeBuildInputs = [ nixfmt ];
+  nativeBuildInputs = [ nixfmt-classic ];
   settingsFormat = formats.flags { };
   fix = ''nixfmt $config "$path"'';
 }
