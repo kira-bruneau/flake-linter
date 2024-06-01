@@ -25,24 +25,22 @@ your project (using Nix flakes).
     flake-linter.url = "gitlab:kira-bruneau/flake-linter";
   };
 
-  outputs = { flake-utils, flake-linter }:
-    flake-utils.lib.eachDefaultSystem (system:
+  outputs =
+    { flake-utils, flake-linter }:
+    flake-utils.lib.eachDefaultSystem (
+      system:
       let
         flake-linter-lib = flake-linter.lib.${system};
 
-        paths = flake-linter-lib.partitionToAttrs
-          {
-            inherit (flake-linter-lib.commonPaths)
-              markdown
-              nix;
-          }
-          (flake-linter-lib.walkFlake ./.);
+        paths = flake-linter-lib.partitionToAttrs { inherit (flake-linter-lib.commonPaths) markdown nix; } (
+          flake-linter-lib.walkFlake ./.
+        );
 
         linter = flake-linter-lib.makeFlakeLinter {
           root = ./.;
           settings = {
             markdownlint.paths = paths.markdown;
-            nixpkgs-fmt.paths = paths.nix;
+            nixfmt-rfc-style.paths = paths.nix;
           };
         };
       in
@@ -54,7 +52,8 @@ your project (using Nix flakes).
         apps = {
           inherit (linter) fix;
         };
-      });
+      }
+    );
 }
 ```
 
@@ -66,7 +65,7 @@ nix flake check
 
 ### Fix files
 
-```nix
+```shell
 nix run .#fix
 ```
 
@@ -83,26 +82,31 @@ flake-linter-lib.makeFlakeLinter {
 
   settings = {
     my-linter = {
-      # Paths to lint, relative to `root`
+      # Paths to lint (list of strings relative to `root`)
       paths = [ ];
 
-      # Linter-specific configuration
-      settings = {};
+      # Linter-specific configuration (optional)
+      settings = { };
+
+      # Overrides to pass to overridable linters (optional)
+      # See https://nixos.org/manual/nixpkgs/stable/#chap-overrides
+      overrides = { };
     };
   };
 
-  # Optional
+  # Definitions for linters not included in flake-linter (optional)
+  # Please consider upstreaming generally useful `extraLinters` 🙂
   extraLinters = {
     my-linter = {
       nativeBuildInputs = with pkgs; [ my-linter ];
 
-      # Optional, provides `$config` which will be generated from `settings`
+      # Generates `$config` from `settings` (optional)
       settingsFormat = pkgs.formats.json { };
 
-      # Optional, automatically derived from fix output when not defined
+      # Check command (optional, derived from fix when not defined)
       check = ''my-linter --config "$config" --check "$src"'';
 
-      # Required if check isn't defined
+      # Fix command (required if check isn't defined)
       fix = ''my-linter --config "$config" --fix "$path"'';
     };
   };
@@ -117,6 +121,7 @@ flake-linter-lib.makeFlakeLinter {
 A set of builtin linters, used by `makeFlakeLinter`:
 
 - [alejandra](https://github.com/kamadorueda/alejandra)
+- [hadolint](https://github.com/hadolint/hadolint)
 - [markdownlint](https://github.com/igorshubovych/markdownlint-cli)
 - [nix-linter](https://github.com/Synthetica9/nix-linter)
 - [nixfmt-classic](https://nixfmt.serokell.io)
@@ -144,6 +149,7 @@ partition a list of paths into common categories:
 
 - **bash**: \*.sh, \*.bash
 - **css**: \*.css
+- **docker**: Dockerfile
 - **html**: \*.html, \*.htm
 - **javascript**: \*.js, \*.mjs
 - **json**: \*.json

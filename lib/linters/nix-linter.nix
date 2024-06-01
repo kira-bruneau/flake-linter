@@ -9,10 +9,12 @@ in
 
   settingsFormat = {
     type = with types; listOf str;
-    generate = _name: checks:
-      (concatMap
-        (check: [ "-W" check ])
-        checks);
+    generate =
+      _name: checks:
+      (concatMap (check: [
+        "-W"
+        check
+      ]) checks);
   };
 
   fix = ''nix-linter $config "$path"'';

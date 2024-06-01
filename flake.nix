@@ -9,27 +9,35 @@
     nixpkgs.url = "nixpkgs/nixos-24.05";
   };
 
-  outputs = { self, flake-utils, nixpkgs }:
-    flake-utils.lib.eachDefaultSystem (system:
+  outputs =
+    {
+      self,
+      flake-utils,
+      nixpkgs,
+    }:
+    flake-utils.lib.eachDefaultSystem (
+      system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
 
         flake-linter-lib = self.lib.${system};
 
-        paths = flake-linter-lib.partitionToAttrs
-          {
-            inherit (flake-linter-lib.commonPaths)
-              bash
-              markdown
-              nix;
-          }
-          (flake-linter-lib.walkFlake ./.);
+        paths = flake-linter-lib.partitionToAttrs {
+          inherit (flake-linter-lib.commonPaths) bash markdown nix;
+        } (flake-linter-lib.walkFlake ./.);
 
         linter = flake-linter-lib.makeFlakeLinter {
           root = ./.;
           settings = {
-            markdownlint.paths = paths.markdown;
-            nixpkgs-fmt.paths = paths.nix;
+            markdownlint = {
+              paths = paths.markdown;
+              settings = {
+                MD013 = false;
+              };
+            };
+
+            nixfmt-rfc-style.paths = paths.nix;
+
             shfmt = {
               paths = paths.bash;
               settings = {
@@ -58,5 +66,6 @@
             pkgs.nodePackages.markdown-link-check
           ];
         };
-      });
+      }
+    );
 }

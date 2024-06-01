@@ -1,21 +1,17 @@
 let
-  inherit (builtins)
-    stringLength
-    substring;
+  inherit (builtins) stringLength substring;
 
   # Copied from: https://github.com/NixOS/nixpkgs/blob/master/lib/options.nix
   optional = cond: elem: if cond then [ elem ] else [ ];
 
   # Copied from: https://github.com/NixOS/nixpkgs/blob/master/lib/strings.nix
   hasSuffix =
-    suffix:
-    content:
+    suffix: content:
     let
       lenContent = stringLength content;
       lenSuffix = stringLength suffix;
     in
-    lenContent >= lenSuffix &&
-    substring (lenContent - lenSuffix) lenContent content == suffix;
+    lenContent >= lenSuffix && substring (lenContent - lenSuffix) lenContent content == suffix;
 
   bash = path: optional (hasSuffix ".sh" path || hasSuffix ".bash" path) path;
   css = path: optional (hasSuffix ".css" path) path;
@@ -34,7 +30,8 @@ let
   yaml = path: optional (hasSuffix ".yaml" path || hasSuffix ".yml" path) path;
 
   # TODO: Find a more efficient way of composing these (compile to regexp?)
-  prettier = path:
+  prettier =
+    path:
     css path
     ++ html path
     ++ javascript path
@@ -65,5 +62,6 @@ in
     sass
     typescript
     vue
-    yaml;
+    yaml
+    ;
 }

@@ -10,11 +10,10 @@ let
     mapAttrs
     readDir
     stringLength
-    substring;
+    substring
+    ;
 
-  makeFlakeLinter = import ./make-flake-linter {
-    inherit pkgs linters;
-  };
+  makeFlakeLinter = import ./make-flake-linter { inherit pkgs linters; };
 
   linters =
     let
@@ -29,35 +28,37 @@ let
 
   commonPaths = import ./common-paths.nix;
 
-  partitionToAttrs = template: list:
-    foldl'
-      (attrs: elem:
-        (mapAttrs
-          (name: template: attrs.${name} ++ (template elem))
-          template))
-      (listToAttrs
-        (map
-          (name: { inherit name; value = [ ]; })
-          (attrNames template)))
-      list;
+  partitionToAttrs =
+    template: list:
+    foldl' (attrs: elem: (mapAttrs (name: template: attrs.${name} ++ (template elem)) template)) (
+      listToAttrs
+      (
+        map (name: {
+          inherit name;
+          value = [ ];
+        }) (attrNames template)
+      )
+    ) list;
 
   # This is very similar to listFilesRecursive in nixpkgs, except that
   # it returns strings relative to root instead of paths.
-  walkFlake = root:
+  walkFlake =
+    root:
     let
-      removeRoot = path:
-        substring 1 (stringLength path) path;
+      removeRoot = path: substring 1 (stringLength path) path;
 
-      walkFlakeDir = dir:
+      walkFlakeDir =
+        dir:
         let
           entries = readDir (root + dir);
         in
-        (concatMap
-          (path:
-            if entries.${path} == "directory"
-            then walkFlakeDir "${dir}/${path}"
-            else [ (removeRoot "${dir}/${path}") ])
-          (attrNames entries));
+        (concatMap (
+          path:
+          if entries.${path} == "directory" then
+            walkFlakeDir "${dir}/${path}"
+          else
+            [ (removeRoot "${dir}/${path}") ]
+        ) (attrNames entries));
     in
     walkFlakeDir "";
 in
@@ -68,5 +69,6 @@ in
     formats
     commonPaths
     partitionToAttrs
-    walkFlake;
+    walkFlake
+    ;
 }
