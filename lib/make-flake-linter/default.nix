@@ -1,4 +1,4 @@
-{ pkgs, linters }@args:
+args:
 
 {
   root,

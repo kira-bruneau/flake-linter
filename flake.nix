@@ -23,7 +23,12 @@
         flake-linter-lib = self.lib.${system};
 
         paths = flake-linter-lib.partitionToAttrs {
-          inherit (flake-linter-lib.commonPaths) bash markdown nix;
+          inherit (flake-linter-lib.commonPaths)
+            bash
+            markdown
+            nix
+            rust
+            ;
         } (flake-linter-lib.walkFlake ./.);
 
         linter = flake-linter-lib.makeFlakeLinter {
@@ -36,7 +41,16 @@
               };
             };
 
+            nixf-tidy-fix = {
+              paths = paths.nix;
+              settings = {
+                variable-lookup = true;
+              };
+            };
+
             nixfmt-rfc-style.paths = paths.nix;
+
+            rustfmt.paths = paths.rust;
 
             shfmt = {
               paths = paths.bash;

@@ -1,0 +1,11 @@
+[package]
+name = "nixf-tidy-fix"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+dyn-fmt = "0.4.3"
+ra_ap_text_edit = "0.0.236"
+serde = { version = "1.0.210", features = ["derive"] }
+serde_json = "1.0.128"
+serde_repr = "0.1.19"
