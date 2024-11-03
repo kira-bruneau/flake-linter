@@ -1,7 +1,11 @@
-{ rustfmt, formats }:
+{ rustfmt, moreutils, formats }:
 
 {
-  nativeBuildInputs = [ rustfmt ];
+  nativeBuildInputs = [ rustfmt moreutils ];
+
   settingsFormat = formats.toml { };
-  fix = ''rustfmt --config-path "$config" "$path"'';
+
+  # Explicitly pass file contents through stdin, otherwise rustfmt
+  # tries to recurse into child modules
+  fix = ''rustfmt --config-path "$config" < "$path" | sponge "$out"'';
 }

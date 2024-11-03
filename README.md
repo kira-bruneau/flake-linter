@@ -200,9 +200,6 @@ flake-linter-lib.walkFlake ./.
   access. It would introduce impurities that would prevent us from
   running checks & fixes incrementally.
 
-  - rustfmt will try & fail to load "mod"s to other files. This can be
-    worked around by applying `#[rustfmt::skip]` to each mod.
-
 - flake-linter computes patches in isolation (per-linter &
   per-path). This allows us to run linters in parallel, but conflicts
   can occur if multiple linters fix the same lines in the same file,
