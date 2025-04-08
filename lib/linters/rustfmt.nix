@@ -1,7 +1,14 @@
-{ rustfmt, moreutils, formats }:
+{
+  rustfmt,
+  moreutils,
+  formats,
+}:
 
 {
-  nativeBuildInputs = [ rustfmt moreutils ];
+  nativeBuildInputs = [
+    rustfmt
+    moreutils
+  ];
 
   settingsFormat = formats.toml { };
 
