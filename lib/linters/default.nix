@@ -5,7 +5,7 @@
   markdownlint = callPackage ./markdownlint.nix { };
   nix-linter = callPackage ./nix-linter.nix { };
   nixf-tidy-fix = callPackage ./nixf-tidy-fix { };
-  nixfmt-rfc-style = callPackage ./nixfmt-rfc-style.nix { };
+  nixfmt = callPackage ./nixfmt.nix { };
   nixpkgs-fmt = callPackage ./nixpkgs-fmt.nix { };
   prettier = callPackage ./prettier.nix { };
   rustfmt = callPackage ./rustfmt.nix { };

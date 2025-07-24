@@ -48,7 +48,7 @@
               };
             };
 
-            nixfmt-rfc-style.paths = paths.nix;
+            nixfmt.paths = paths.nix;
 
             rustfmt.paths = paths.rust;
 
