@@ -126,7 +126,6 @@ A set of builtin linters, used by `makeFlakeLinter`:
 - [markdownlint](https://github.com/igorshubovych/markdownlint-cli)
 - [nix-linter](https://github.com/Synthetica9/nix-linter)
 - [nixf-tidy-fix](https://github.com/nix-community/nixd/tree/main/libnixf#nixf-tidy)
-- [nixfmt-classic](https://nixfmt.serokell.io)
 - [nixfmt-rfc-style](https://nixfmt.serokell.io)
 - [nixpkgs-fmt](https://nix-community.github.io/nixpkgs-fmt)
 - [prettier](https://prettier.io)
