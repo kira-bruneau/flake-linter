@@ -48,7 +48,7 @@ fn main() -> ExitCode {
     let mut text_edit = ra_ap_text_edit::TextEditBuilder::default();
     for diagnostic in diagnostics {
         if diagnostic.fixes.is_empty() {
-            eprintln!("{}:{}", file_path.to_string_lossy(), diagnostic);
+            eprintln!("{}:{}", file_path.display(), diagnostic);
             exit_code = ExitCode::FAILURE;
         } else {
             diagnostic.fix(&mut text_edit);
