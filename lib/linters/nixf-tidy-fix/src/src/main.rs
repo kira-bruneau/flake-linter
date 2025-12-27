@@ -2,9 +2,12 @@ use {
     serde::{self, Deserialize},
     serde_repr::Deserialize_repr,
     std::{
-        env, fmt,
+        collections::HashSet,
+        env,
+        ffi::OsString,
+        fmt,
         fs::File,
-        io::{Read, Seek, Write},
+        io::{self, BufReader, Read, Seek, Write},
         process::{Command, ExitCode, Stdio},
     },
 };
@@ -13,8 +16,10 @@ fn main() -> ExitCode {
     let mut args = env::args_os();
     args.next();
 
-    let file_path = args.next().unwrap();
+    let config_path = args.next().unwrap();
+    let config = Config::read_from_path(&config_path).unwrap();
 
+    let file_path = args.next().unwrap();
     let mut file = File::options()
         .read(true)
         .write(true)
@@ -24,8 +29,12 @@ fn main() -> ExitCode {
     let mut file_contents = String::new();
     file.read_to_string(&mut file_contents).unwrap();
 
-    let mut nixf_tidy = Command::new("nixf-tidy")
-        .args(args)
+    let mut nixf_tidy_command = Command::new("nixf-tidy");
+    if config.variable_lookup {
+        nixf_tidy_command.arg("--variable-lookup");
+    }
+
+    let mut nixf_tidy = nixf_tidy_command
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .spawn()
@@ -47,11 +56,13 @@ fn main() -> ExitCode {
     let mut exit_code = ExitCode::SUCCESS;
     let mut text_edit = ra_ap_text_edit::TextEditBuilder::default();
     for diagnostic in diagnostics {
-        if diagnostic.fixes.is_empty() {
-            eprintln!("{}:{}", file_path.display(), diagnostic);
-            exit_code = ExitCode::FAILURE;
-        } else {
-            diagnostic.fix(&mut text_edit);
+        if !config.suppress.contains(&diagnostic.sname) {
+            if diagnostic.fixes.is_empty() {
+                eprintln!("{}:{}", file_path.display(), diagnostic);
+                exit_code = ExitCode::FAILURE;
+            } else {
+                diagnostic.fix(&mut text_edit);
+            }
         }
     }
 
@@ -64,6 +75,23 @@ fn main() -> ExitCode {
     }
 
     exit_code
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "kebab-case")]
+struct Config {
+    #[serde(default)]
+    variable_lookup: bool,
+    #[serde(default)]
+    suppress: HashSet<String>,
+}
+
+impl Config {
+    fn read_from_path(path: &OsString) -> Result<Self, io::Error> {
+        let file = File::open(path).unwrap();
+        let reader = BufReader::new(file);
+        Ok(serde_json::from_reader(reader)?)
+    }
 }
 
 #[derive(Deserialize)]

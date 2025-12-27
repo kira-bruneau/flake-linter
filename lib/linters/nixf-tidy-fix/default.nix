@@ -17,9 +17,9 @@ in
     nixf-tidy-fix
   ];
 
-  settingsFormat = formats.flags { };
+  settingsFormat = formats.json { };
 
   fix = ''
-    nixf-tidy-fix "$path" $config
+    nixf-tidy-fix "$config" "$path"
   '';
 }
