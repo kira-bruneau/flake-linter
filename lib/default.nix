@@ -6,7 +6,6 @@ let
     concatMap
     foldl'
     listToAttrs
-    map
     mapAttrs
     readDir
     stringLength

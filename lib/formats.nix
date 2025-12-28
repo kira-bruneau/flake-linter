@@ -1,7 +1,7 @@
 { lib }:
 
 let
-  inherit (builtins) attrNames concatMap toString;
+  inherit (builtins) attrNames concatMap;
 
   inherit (lib) types;
 in

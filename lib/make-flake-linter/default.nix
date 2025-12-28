@@ -23,8 +23,6 @@ pkgs.callPackage (
       attrNames
       concatMap
       concatStringsSep
-      map
-      toString
       ;
 
     inherit (lib)
