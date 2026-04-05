@@ -1,7 +1,7 @@
-{ nodePackages, formats }:
+{ markdownlint-cli, formats }:
 
 {
-  nativeBuildInputs = [ nodePackages.markdownlint-cli ];
+  nativeBuildInputs = [ markdownlint-cli ];
   settingsFormat = formats.json { };
   fix = ''markdownlint --config "$config" --fix "$path"'';
 }

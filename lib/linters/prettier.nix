@@ -1,7 +1,7 @@
-{ nodePackages, formats }:
+{ prettier, formats }:
 
 {
-  nativeBuildInputs = [ nodePackages.prettier ];
+  nativeBuildInputs = [ prettier ];
   settingsFormat = formats.json { };
   fix = ''prettier --config "$config" --write "$path"'';
 }
