@@ -50,6 +50,8 @@
 
             nixfmt.paths = paths.nix;
 
+            prettier.paths = paths.markdown;
+
             rustfmt.paths = paths.rust;
 
             shfmt = {
